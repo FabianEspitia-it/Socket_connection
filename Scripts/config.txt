@@ -1,0 +1,4 @@
+linuxpath=../Strings/10k.txt
+linuxpath=../Strings/100k.txt
+linuxpath=../Strings/250k.txt
+linuxpath=../Strings/1M.txt
