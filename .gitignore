@@ -1,0 +1,120 @@
+# Python specific
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+env/
+.pipenv/
+pipfile.lock
+
+# IDE / Editor
+.vscode/
+.idea/
+*.iml
+
+# Compiled Python files
+*.pyc
+*.pyo
+*.pyd
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+
+# Dependency folders
+node_modules/
+bower_components/
+
+# Compiled files
+dist/
+build/
+*.min.*
+
+# Environment configuration
+.env
+*.env
+
+# Local development configuration
+settings.ini
+
+# Database files
+*.db
+*.sqlite3
+
+# Media files
+media/
+
+# Compiled Sass
+*.css.map
+
+# Compiled JavaScript
+*.js.map
+
+# Editor specific
+*.sublime-project
+*.sublime-workspace
+
+# macOS specific files
+.DS_Store
+
+# Windows thumbnail cache
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+
+# Windows folder config file
+Desktop.ini
+
+# Compiled binary files
+*.exe
+*.dll
+*.bin
+*.so
+*.dylib
+
+# Archive files
+*.zip
+*.rar
+*.gz
+*.7z
+
+# Compiled files
+*.com
+*.class
+*.o
+
+# Compiled Java
+*.jar
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Executables
+*.app
+*.exe
+
+# OS X
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear on external disks
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk

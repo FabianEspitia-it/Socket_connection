@@ -1,0 +1,10 @@
+[UNIX]
+Description=Socket server
+
+[SERVICE]
+Type=Simple
+Restart=Always
+RestartSec=1
+User=root
+# TODO: Update python path and the path of the program
+ExecStart=/root/bin/python /root/test/app.py
