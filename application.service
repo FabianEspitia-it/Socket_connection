@@ -1,10 +1,13 @@
 [UNIX]
-Description=Socket server
+Description= Socket Server
+After=network.target
 
 [SERVICE]
-Type=Simple
-Restart=Always
-RestartSec=1
+Type=simple
 User=root
-# TODO: Update python path and the path of the program
-ExecStart=/root/bin/python /root/test/app.py
+WorkingDirectory=/Test/Scripts
+ExecStart=/usr/bin/python3 server.py
+
+[INSTALL]
+WantedBy=multi-user.target
+
