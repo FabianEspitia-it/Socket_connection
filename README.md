@@ -23,14 +23,14 @@ security issues, and implement SSL authentication between the server and the cli
 self-signed certificate or PSK as the authentication method. Make the SSL authentication configurable and
 easy to turn off from the configuration file (True/False).
 - [✅] The code needs to be PEP8 and PEP20 compliant, statically typed, docstring'd and documented on delivery, neatly and professionally packaged. Remember: you’re here to demonstrate your level of attention to detail and your diligence. So if you’re going to use a tool that promises to simply process your code and make it PEP8 compliant, then beware: if it does not work perfectly, then you’re going to get penalized for submitting non-PEP8-compliant code, and in addition to that, you’re also going to make the wrong impression on your evaluators, which is going to impact the offer you get. Please always check your PEP8 compliance manually, and do it with the eye of a perfectionist, instead of trusting third party tools to do a good enough job for you.
-- Robust exception handling and error messages are required, covered with Unit tests for:
-A. Showing different execution times for different file sizes from 10,000 to 1,000,000 with a client
+- [✅] Robust exception handling and error messages are required, covered with Unit tests for:
+[✅] A. Showing different execution times for different file sizes from 10,000 to 1,000,000 with a client
 you write for testing purposes and cover these in your speed testing report,
 B. Showing different execution times for file sizes vs. number of queries per second, up to the point
 that the server can not handle it anymore (document the limitations of the software),
 C. Demonstrating correct workflow in all paths and cases,
-D. Unit testing all exceptions and edge cases is required (use pytest!)
-- Submit your repository to us in email in a zip file when it’s done, complete with tests, speed report,
+D.[✅] Unit testing all exceptions and edge cases is required (use pytest!)
+- [✅] Submit your repository to us in email in a zip file when it’s done, complete with tests, speed report,
 client.py, and everything else, ready to deploy. Make sure you have everything in there, and make sure you
 check the Evaluation Sheet below to score yourself and see that you are making a passing submission.
 Also, please make sure not to include any absolute paths in the tests and other places of the repository

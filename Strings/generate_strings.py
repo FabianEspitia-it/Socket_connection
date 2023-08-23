@@ -30,15 +30,16 @@ def generate_strings(file_name: str, random_words_quantity: int):
 
 # Generate random data and write to text files
 
+# Program's Entry Point
+if __name__ == "__main__":
+    # Generate 10,000 random words and write to "./10k.txt"
+    generate_strings("./10k.txt", 10000)
 
-# Generate 10,000 random words and write to "./10k.txt"
-generate_strings("./10k.txt", 10000)
+    # Generate 100,000 random words and write to "./100k.txt"
+    generate_strings("./100k.txt", 100000)
 
-# Generate 100,000 random words and write to "./100k.txt"
-generate_strings("./100k.txt", 100000)
+    # Generate 250,000 random words and write to "./250k.txt"
+    generate_strings("./250k.txt", 250000)
 
-# Generate 250,000 random words and write to "./250k.txt"
-generate_strings("./250k.txt", 250000)
-
-# Generate 1,000,000 random words and write to "./1M.txt"
-generate_strings("./1M.txt", 1000000)
+    # Generate 1,000,000 random words and write to "./1M.txt"
+    generate_strings("./1M.txt", 1000000)

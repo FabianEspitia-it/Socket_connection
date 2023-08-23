@@ -8,7 +8,7 @@ PEP20: Readability counts.
 Author: Fabián Espitia
 """
 
-
+# Python
 import socket
 import threading
 import time
@@ -18,7 +18,7 @@ import ssl
 SERVER_ADDR = socket.gethostname()
 SERVER_PORT = 8000
 CONFIG_FILE = "config.txt"
-REREAD_ON_QUERY = True
+REREAD_ON_QUERY = False
 CERT_FILE = "../SSL/server.crt"
 KEY_FILE = "../SSL/server.key"
 
@@ -58,19 +58,12 @@ def client_response(client_message: str, document: list[str], client_data: str, 
     Returns:
         str: Response message.
     """
-    word_number = 1
+    document_set = set(map(str.strip, document))
 
-    for sentence in document:
-        new_sentence = sentence.replace("\n", "").strip()
-        if new_sentence == client_message:
-            message = f"STRING EXISTS, {client_data}, Execution_time: {round((time.time() - start_time ) * 1000, 2)} ms, Time_stamp: {time.ctime()}, Word_in_line: {word_number}  \n".encode(
-                "utf-8")
-            break
-        word_number += 1
-
+    if client_message in document_set:
+        message = f"STRING EXISTS, {client_data}, Execution_time: {round((time.time() - start_time) * 1000, 2)} ms, Time_stamp: {time.ctime()} \n".encode("utf-8")
     else:
-        message = f"STRING NOT FOUND, {client_data} , Execution_time: {round((time.time()- start_time) * 1000, 2)} ms, Time_stamp: {time.ctime()}  \n".encode(
-            "utf-8")
+        message = f"STRING NOT FOUND, {client_data}, Execution_time: {round((time.time() - start_time) * 1000, 2)} ms, Time_stamp: {time.ctime()} \n".encode("utf-8")
 
     return message
 
@@ -83,29 +76,29 @@ def client_connection(client_socket, client_addr: tuple[str, int]):
         client_socket: Client's socket object.
         client_addr (tuple[str, int]): Client's address.
     """
+    try:
+        client_message = client_socket.recv(1024).decode("utf-8")
+        client_message = client_message.rstrip('\x00')
+        client_data = f"DEBUG: Request: {client_message}, Client_IP: {client_addr[0]}"
+        files = search_files(CONFIG_FILE)
 
-    client_message = client_socket.recv(1024).decode("utf-8")
-    client_message = client_message.rstrip('\x00')
-    client_data = f"DEBUG: Request: {client_message}, Client_IP: {client_addr}"
-    files = search_files(CONFIG_FILE)
+        if REREAD_ON_QUERY:
+            try:
+                with open(files[3], "r") as document:
+                    start_time = time.time()
+                    client_socket.send(client_response(
+                        client_message, document, client_data, start_time))
+            except FileNotFoundError as error:
+                client_socket.send(
+                    f"ERROR: {error}, FILE NOT FOUND".encode("utf-8"))
+        else:
+            start_time = time.time()
+            client_socket.send(client_response(
+                client_message, FILE_DATA, client_data, start_time))
 
-    if REREAD_ON_QUERY:
-        try:
-            with open(files[-2], "r") as document:
-                start_time = time.time()
-                client_socket.send(client_response(
-                    client_message, document, client_data, start_time))
-        except FileNotFoundError as error:
-            client_socket.send(
-                f"ERROR: {error}, FILE NOT FOUND".encode("utf-8"))
-    else:
-        cached_document = load_document_contents(CONFIG_FILE)
-        start_time = time.time()
-        client_socket.send(client_response(
-            client_message, cached_document, client_data, start_time))
-
-    client_socket.close()
-
+        client_socket.close()
+    except Exception as error:
+        print(f"An error has ocurried: {error}")
 
 def load_document_contents(config_file: str) -> list[str]:
     """
@@ -117,10 +110,13 @@ def load_document_contents(config_file: str) -> list[str]:
     Returns:
         list[str]: List of lines from the document.
     """
-    files = search_files(config_file)
-    with open(files[-2], "r") as document:
-        data = document.readlines()
-    return data
+    try:
+        files = search_files(config_file)
+        with open(files[3], "r") as document:
+            data = document.readlines()
+        return data
+    except Exception as error:
+        print(f"An error has ocurried: {error}")
 
 
 def check_enable_ssl(config_file: str) -> bool:
@@ -133,39 +129,50 @@ def check_enable_ssl(config_file: str) -> bool:
     Returns:
         bool: True if SSL is enabled, False otherwise.
     """
-    with open(config_file, "r") as file:
-        for line in file:
-            if line.startswith("ENABLE_SSL"):
-                state = line.strip().split("=")[1].strip()
-                return state == "True"
+    try:
+        with open(config_file, "r") as file:
+            for line in file:
+                if line.startswith("ENABLE_SSL"):
+                    state = line.strip().split("=")[1].strip()
+                    return state == "True"
+    except FileNotFoundError:
+        print(f"Config file '{config_file}' not found.")
 
 
 def main():
     """
     Program's main entry point
     """
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((SERVER_ADDR, SERVER_PORT))
-    server_socket.listen(5)
+    try:
+        # Create server's socket
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_socket.bind((SERVER_ADDR, SERVER_PORT))
+        server_socket.listen(5)
+        global FILE_DATA 
+        FILE_DATA = load_document_contents(CONFIG_FILE)
 
-    while True:
+        while True:
 
-        client_socket, client_addr = server_socket.accept()
+            client_socket, client_addr = server_socket.accept()
 
-        if check_enable_ssl(CONFIG_FILE):
-            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            ssl_context.load_cert_chain(
-                certfile=CERT_FILE, keyfile=KEY_FILE)
-            ssl_client_socket = ssl_context.wrap_socket(
-                client_socket, server_side=True)
-            client_thread = threading.Thread(
-                name="client_thread", target=client_connection, args=(ssl_client_socket, client_addr))
-            client_thread.start()
+            if check_enable_ssl(CONFIG_FILE):
+                # If SSL is enabled, create an SSL context and connect using SSL
+                ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+                ssl_context.load_cert_chain(
+                    certfile=CERT_FILE, keyfile=KEY_FILE)
+                ssl_client_socket = ssl_context.wrap_socket(
+                    client_socket, server_side=True)
+                client_thread = threading.Thread(
+                    name="client_thread", target=client_connection, args=(ssl_client_socket, client_addr))
+                client_thread.start()
 
-        else:
-            client_thread = threading.Thread(
-                name="client_thread", target=client_connection, args=(client_socket, client_addr))
-            client_thread.start()
+            else:
+                # If SSL is not enabled, send and receive data over the regular socket
+                client_thread = threading.Thread(
+                    name="client_thread", target=client_connection, args=(client_socket, client_addr))
+                client_thread.start()
+    except Exception as error:
+        print(f"An error has occurred: {error}")
 
 
 # Program's Entry Point

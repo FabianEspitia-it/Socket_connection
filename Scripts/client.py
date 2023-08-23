@@ -8,7 +8,7 @@ PEP20: Readability counts.
 Author: Fabián Espitia
 """
 
-
+# Python
 import socket
 import ssl
 
@@ -28,12 +28,13 @@ def main():
     # Create client's socket
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((SERVER_ADDR, SERVER_PORT))
-    message = "few"
+    message = input("¿Which word do you wanna search?: ")
 
     if check_enable_ssl(CONFIG_FILE):
         # If SSL is enabled, create an SSL context and connect using SSL
         ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
         ssl_context.load_verify_locations(CERT_FILE)
+        # If there are problems with the server_hostname, change the variable to server_hostname = "DESKTOP-LAROQRJ"
         ssl_socket = ssl_context.wrap_socket(
             client_socket, server_hostname=SERVER_ADDR)
         ssl_socket.send(message.encode("utf-8"))
