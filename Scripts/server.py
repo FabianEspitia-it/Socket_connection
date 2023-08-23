@@ -61,9 +61,11 @@ def client_response(client_message: str, document: list[str], client_data: str, 
     document_set = set(map(str.strip, document))
 
     if client_message in document_set:
-        message = f"STRING EXISTS, {client_data}, Execution_time: {round((time.time() - start_time) * 1000, 2)} ms, Time_stamp: {time.ctime()} \n".encode("utf-8")
+        message = f"STRING EXISTS, {client_data}, Execution_time: {round((time.time() - start_time) * 1000, 2)} ms, Time_stamp: {time.ctime()} \n".encode(
+            "utf-8")
     else:
-        message = f"STRING NOT FOUND, {client_data}, Execution_time: {round((time.time() - start_time) * 1000, 2)} ms, Time_stamp: {time.ctime()} \n".encode("utf-8")
+        message = f"STRING NOT FOUND, {client_data}, Execution_time: {round((time.time() - start_time) * 1000, 2)} ms, Time_stamp: {time.ctime()} \n".encode(
+            "utf-8")
 
     return message
 
@@ -84,7 +86,13 @@ def client_connection(client_socket, client_addr: tuple[str, int]):
 
         if REREAD_ON_QUERY:
             try:
-                with open(files[3], "r") as document:
+                """
+                    files[0] = 10k.txt
+                    files[1] = 100k.txt
+                    files[2] = 250k.txt
+                    files[3] = 1M.txt
+                """
+                with open(files[0], "r") as document:
                     start_time = time.time()
                     client_socket.send(client_response(
                         client_message, document, client_data, start_time))
@@ -100,6 +108,7 @@ def client_connection(client_socket, client_addr: tuple[str, int]):
     except Exception as error:
         print(f"An error has ocurried: {error}")
 
+
 def load_document_contents(config_file: str) -> list[str]:
     """
     Loads and returns the contents of the document from the config file.
@@ -112,7 +121,13 @@ def load_document_contents(config_file: str) -> list[str]:
     """
     try:
         files = search_files(config_file)
-        with open(files[3], "r") as document:
+        """
+                files[0] = 10k.txt
+                files[1] = 100k.txt
+                files[2] = 250k.txt
+                files[3] = 1M.txt
+        """
+        with open(files[0], "r") as document:
             data = document.readlines()
         return data
     except Exception as error:
@@ -148,7 +163,7 @@ def main():
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.bind((SERVER_ADDR, SERVER_PORT))
         server_socket.listen(5)
-        global FILE_DATA 
+        global FILE_DATA
         FILE_DATA = load_document_contents(CONFIG_FILE)
 
         while True:
